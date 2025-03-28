@@ -1,0 +1,157 @@
+management:
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include:
+          [
+            'configprops',
+            'env',
+            'health',
+            'info',
+            'jhimetrics',
+            'jhiopenapigroups',
+            'logfile',
+            'loggers',
+            'prometheus',
+            'threaddump',
+            'caches',
+            'liquibase',
+          ]
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: when_authorized
+      roles: 'NEXTR_ADMIN'
+      probes:
+        enabled: false
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+      validate-group-membership: false
+    jhimetrics:
+      enabled: true
+
+  info:
+    git:
+      mode: full
+    env:
+      enabled: true
+  health:
+    mail:
+      enabled: false # When using the MailService, configure an SMTP server and set this to true
+  metrics:
+    enable:
+      http: false
+      jvm: false
+      logback: false
+      process: false
+      system: false
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+        all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: false
+        step: 60
+
+jhipster:
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params"
+    allow-credentials: false
+    max-age: 1800
+  clientApp:
+    name: 'nlj-verify'
+  # By default CORS is disabled. Uncomment to enable.
+  # cors:
+  #   allowed-origins: "http://localhost:8100,http://localhost:9000"
+  #   allowed-methods: "*"
+  #   allowed-headers: "*"
+  #   exposed-headers: "Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params"
+  #   allow-credentials: true
+  #   max-age: 1800
+  mail:
+    from: nlj-verify@localhost
+  api-docs:
+    default-include-pattern: ${server.servlet.context-path:}/api/**
+    management-include-pattern: ${server.servlet.context-path:}/management/**
+    title: Next Verify Service API
+    description: Next Verify Service API documentation
+    version: 1.0.0
+    terms-of-service-url:
+    contact-name:
+    contact-url:
+    contact-email:
+    license: unlicensed
+    license-url:
+  security:
+    oauth2:
+      audience:
+        - account
+        - api://default
+
+spring:
+  profiles:
+    active: stg
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  application:
+    name: nlj-verify
+  cloud:
+    consul:
+      enabled: false
+      discovery:
+        healthCheckPath: /management/health
+        instanceId: nlj-verify:${spring.application.instance-id:${random.value}}
+        service-name: nlj-verify
+      config:
+        watch:
+          enabled: false
+  jmx:
+    enabled: false
+
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  thymeleaf:
+    mode: HTML
+  output:
+    ansi:
+      enabled: always
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+
+springdoc:
+  show-actuator: true
+
+info:
+  # Comma separated list of profiles that will trigger the ribbon to show
+  display-ribbon-on-profiles: 'dev'
+
+next:
+  auth:
+    api-key: *
+    refresh-token: https://your-domain/api-endpoint
+    login-system: https://your-domain/api-endpoint
+    login-user: https://your-domain/api-endpoint
+    verify-token: https://your-domain/api-endpoint

@@ -1,0 +1,37 @@
+package jp.co.nlj.ix.dto.reqTrspPlanLineItem;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jp.co.nlj.ix.aop.proxy.ValidateField;
+import jp.co.nlj.ix.constant.DataBaseConstant.DATE_TIME_FORMAT;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * <PRE>
+ * 要求運送依頼DTO。<BR>
+ * </PRE>
+ *
+ * @author Next Logistics Japan
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+public class ReqTrspIsrDTO {
+
+    @JsonProperty("trsp_instruction_id")
+    @ValidateField(notNull = true, maxLength = 20, textHalfWidth = true)
+    private String trspInstructionId; // 運送依頼番号
+
+    @JsonProperty("trsp_instruction_date_subm_dttm")
+    @ValidateField(dateFormat = DATE_TIME_FORMAT.DATE_FORMAT)
+    private String trspInstructionDateSubmDttm; // 運送依頼年月日
+
+    @ValidateField(maxLength = 20, textHalfWidth = true)
+    @JsonProperty("inv_num_id")
+    private String invNumId; // 運送送り状番号
+
+    @ValidateField(maxLength = 20, textHalfWidth = true)
+    @JsonProperty("cmn_inv_num_id")
+    private String cmnInvNumId; // 共用送り状番号
+}

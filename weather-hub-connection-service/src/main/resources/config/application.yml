@@ -1,0 +1,242 @@
+management:
+  zipkin:
+    tracing:
+#      endpoint: http://${HOST_IP_ADDRESS:localhost}:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 0.0
+
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include:
+          [
+            'configprops',
+            'env',
+            'health',
+            'info',
+            'jhimetrics',
+            'jhiopenapigroups',
+            'logfile',
+            'loggers',
+            'prometheus',
+            'threaddump',
+            'caches',
+            'liquibase',
+          ]
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: when_authorized
+      roles: 'NEXTR_ADMIN'
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db
+    jhimetrics:
+      enabled: true
+  info:
+    git:
+      mode: full
+    env:
+      enabled: true
+  health:
+    mail:
+      enabled: false # When using the MailService, configure an SMTP server and set this to true
+  metrics:
+    enable:
+      http: false
+      jvm: false
+      logback: false
+      process: false
+      system: false
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+        all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: false
+        step: 60
+
+jhipster:
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    exposed-headers: "Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params"
+    allow-credentials: false
+    max-age: 1800
+  logging:
+    logstash:
+      q
+  clientApp:
+    name: 'nlj-gateway'
+  # By default CORS is disabled. Uncomment to enable.
+  # cors:
+  #   allowed-origins: "http://localhost:8100,http://localhost:9000"
+  #   allowed-methods: "*"
+  #   allowed-headers: "*"
+  #   exposed-headers: "Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params"
+  #   allow-credentials: true
+  #   max-age: 1800
+  mail:
+    from: nlj-gateway@localhost
+  api-docs:
+    default-include-pattern: ${server.servlet.context-path:}/api/**
+    management-include-pattern: ${server.servlet.context-path:}/management/**
+    title: Next Gateway Service API
+    description: Next Gateway Service API documentation
+    version: 1.0.0
+    terms-of-service-url:
+    contact-name:
+    contact-url:
+    contact-email:
+    license: unlicensed
+    license-url:
+  security:
+    oauth2:
+      audience:
+        - account
+        - api://default
+
+spring:
+  application:
+    name: nlj-gateway-service
+  cloud:
+    consul:
+      enabled: false
+      discovery:
+        healthCheckPath: /management/health
+        instanceId: nlj-gateway:${spring.application.instance-id:${random.value}}
+        service-name: nlj-gateway
+      config:
+        watch:
+          enabled: false
+  jmx:
+    enabled: false
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: true
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      # modify batch size as necessary
+      hibernate.jdbc.batch_size: 25
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.query.fail_on_pagination_over_collection_fetch: true
+      hibernate.query.in_clause_parameter_padding: true
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    show-sql: true
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  thymeleaf:
+    mode: HTML
+  output:
+    ansi:
+      console-available: true
+  profiles:
+    active: dev
+#  security:
+#    oauth2:
+#      client:
+#        provider:
+#          oidc:
+#            issuer-uri: *
+#        registration:
+#          oidc:
+#            client-id: *
+#            client-secret: *
+#            scope: openid, profile, email, offline_access # last one for refresh tokens
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+
+springdoc:
+  show-actuator: true
+
+info:
+  # Comma separated list of profiles that will trigger the ribbon to show
+  display-ribbon-on-profiles: 'dev'
+
+next:
+  auth:
+    api-key: *
+    refresh-token: https://your-domain/api-endpoint
+    login-system: https://your-domain/api-endpoint
+    login-user: https://your-domain/api-endpoint
+    verify-token: https://your-domain/api-endpoint
+  app:
+    cache:
+      user:
+        expiry-m2m-duration: 1800
+        time-unit: seconds
+        expiry-user-duration: 5
+#  authorization:
+#    system:
+#      company: next-logistic-japan-service
+#      system: next-logistic-japan-system
+#      username: *
+#      role-system: *
+#      role-user: *
+#      client-scope: *
+#      password-system: *
+#      password-user: *
+#    admin:
+#      full-access: true
+#    m2m:
+#      username: *
+#      password: *
+#    user-info:
+#      enrich: true
+#      endpoint: *
+#    resource: next-logistic-japan-service
+#  keycloak:
+#    realm: nlj
+#    resource: next-logistic-japan-service
+#    auth-server-url: *
+#    connection-pool-size: 20
+#    secret: *
+#    group: *
+#    secret-key: *
+
+#  mail:
+#    port: 587
+#    password: *
+#    username: *
+#    protocol: smtp
+#    host: *
+#    auth: true
+#    start-t-l-s: true
+
